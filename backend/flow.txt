@@ -1,0 +1,20 @@
+POST /leads (name, email, company)
+  → store raw lead
+  → trigger LangGraph graph async
+  → return 202
+
+Graph:
+  enrichApollo → enrichSerp → verifyEmail
+    → if email invalid: DISQUALIFIED, stop
+  → icpScorer
+    → if score < 50: DISQUALIFIED, stop
+    → if score 50-79: PENDING_REVIEW, stop (human queue)
+    → if score ≥ 80: proceed
+  → generateEmails (LLM, uses campaign config + enriched data)
+  → qualityChecker
+    → if pass: store emails, status = SEQUENCING
+    → if fail: regenerate once
+      → if pass: store emails, status = SEQUENCING
+      → if fail again: store best attempt, status = FLAGGED (human queue)
+
+Human queue handles three statuses: PENDING_REVIEW, FLAGGED. Later add ACTIVE leads that replied back in too

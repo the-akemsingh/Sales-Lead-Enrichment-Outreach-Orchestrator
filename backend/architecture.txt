@@ -1,0 +1,68 @@
+- A raw lead arrives (name + email + company). Before anyone can have a useful conversation with them, 30 minutes of manual research is needed. You automate that 30 minutes and write the first email.
+
+┌─────────────────────────────────────┐
+│           Lead Sources              │
+│  (Web form / CRM webhook / CSV      │
+│   import / Manual API call)         │
+└──────────────────┬──────────────────┘
+                   │ POST /leads
+                   ▼
+┌─────────────────────────────────────┐
+│            FastAPI                  │
+│  - Validate lead                    │
+│  - Store raw lead in DB             │
+│  - Enqueue enrichment job           │
+│  - Return 202 Accepted              │
+└──────────────────┬──────────────────┘
+                   │ task queue
+                   ▼
+┌─────────────────────────────────────┐
+│         Celery Worker               │
+│                                     │
+│  ┌─────────────────────────────┐    │
+│  │     Enrichment Pipeline     │    │
+│  │                             │    │
+│  │  1. Data Fetcher            │    │
+│  │     (Apollo, Clearbit,      │    │
+│  │      Hunter, SerpAPI)       │    │
+│  │                             │    │
+│  │  2. Data Fusion Layer       │    │
+│  │     (normalize + resolve    │    │
+│  │      conflicts)             │    │
+│  │                             │    │
+│  │  3. ICP Scorer              │    │
+│  │     (weighted rubric)       │    │
+│  │                             │    │
+│  │  4. LangGraph Agent         │    │
+│  │     (research synthesis +   │    │
+│  │      sequence generation)   │    │
+│  │                             │    │
+│  │  5. Decision Router         │    │
+│  │     (auto-send vs queue     │    │
+│  │      for human review)      │    │
+│  └─────────────────────────────┘    │
+└──────────────────┬──────────────────┘
+                   │
+        ┌──────────┴──────────┐
+        ▼                     ▼
+┌──────────────┐    ┌──────────────────┐
+│  Auto Send   │    │  Human Review    │
+│  (SendGrid)  │    │  Queue           │
+│              │    │  (Dashboard)     │
+└──────────────┘    └──────────────────┘
+        │                     │ approved
+        └──────────┬──────────┘
+                   ▼
+┌─────────────────────────────────────┐
+│         Sequence Scheduler          │
+│  (Celery Beat — Day 1, 4, 10        │
+│   follow-up state machine)          │
+└──────────────────┬──────────────────┘
+                   │
+                   ▼
+┌─────────────────────────────────────┐
+│         CRM Sync (HubSpot)          │
+│  - Create/update contact            │
+│  - Log activity + emails            │
+│  - Update lead stage on reply       │
+└─────────────────────────────────────┘
