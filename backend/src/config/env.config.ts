@@ -6,6 +6,7 @@ interface Config {
     dbUrl: string
     apolloApiKey: string
     serpApiKey: string
+    abstractApiKey: string
 }
 
 class ConfigLoader {
@@ -18,6 +19,7 @@ class ConfigLoader {
             dbUrl: String(process.env.DATABASE_URL),
             apolloApiKey: String(process.env.APOLLO_API_KEY),
             serpApiKey: String(process.env.SERP_API_KEY),
+            abstractApiKey: String(process.env.ABSTRACT_API_KEY),
         };
     }
 
@@ -44,6 +46,9 @@ class ConfigLoader {
         }
         if (!this.config.serpApiKey) {
             throw new Error('SERP_API_KEY is required');
+        }
+        if (!this.config.abstractApiKey) {
+            throw new Error('ABSTRACT_API_KEY is required');
         }
     }
 }

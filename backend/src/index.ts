@@ -17,18 +17,6 @@ try {
     console.log("Setup the required config", e)
 }
 
-const res = await graph.invoke({
-    rawLead: {
-        company: "simplai",
-        name: "Tanuj",
-        email: "careers@simplai.ai"
-    }
-})
-
-
-console.log("apollo", res.apolloResponse)
-console.log("job", res.serpApiJobResponse)
-console.log("news", res.serpApiNewsResponse)
 
 
 app.listen(4000, () => {

@@ -24,7 +24,10 @@ const State = new StateSchema({
     parsedApolloResponse: parsedApolloResponseSchema,
     serpApiJobResponse: SerpApiJobsResponse,
     serpApiNewsResponse: SerpApiNewsResults,
-    emailStatus: z.enum(["INVALID", "VALID"]),
+    emailInfo: z.object({
+        status: z.enum(["valid_email", "invalid_mailbox"]),
+        isDisposable: z.boolean()
+    }),
     response: z.string()
 });
 
@@ -75,7 +78,7 @@ const enrichSerp: GraphNode<typeof State> = async (state) => {
         ] = await Promise.all(
             newsQueries.map(query => fetchSerpNews(query))
         );
-        if(!companyQueryResult || !fundingQueryResult || !hiringQueryResult || !founderQueryResult){
+        if (!companyQueryResult || !fundingQueryResult || !hiringQueryResult || !founderQueryResult) {
             return {}
         }
         return {
@@ -93,9 +96,23 @@ const enrichSerp: GraphNode<typeof State> = async (state) => {
     }
 };
 
-// const verifyEmail: GraphNode<typeof State> = (state) => {
-//     return { response: "ok" };
-// };
+const verifyEmail: GraphNode<typeof State> = async (state) => {
+    const response = await fetch(`https://emailreputation.abstractapi.com/v1/?api_key=${config.get("abstractApiKey")}&email=${state.rawLead.email}`)
+
+    const emailStats = await response.json() as any
+
+    const status = emailStats.email_deliverability.status_detail || "invalid_mailbox"
+
+    const isDisposable = emailStats.email_quality.is_disposable || true
+
+    return {
+        emailInfo: {
+            status: status,
+            isDisposable: isDisposable
+        }
+    };
+};
+
 // const icpScorer: GraphNode<typeof State> = (state) => {
 //     return { response: "ok" };
 // };
@@ -114,14 +131,14 @@ const enrichSerp: GraphNode<typeof State> = async (state) => {
 
 export const graph = new StateGraph(State)
     // .addNode("enrichApollo", enrichApollo)
-    .addNode("enrichSerp", enrichSerp)
-    // .addNode("verifyEmail", verifyEmail)
+    // .addNode("enrichSerp", enrichSerp)
+    .addNode("verifyEmail", verifyEmail)
     // .addNode("icpScorer", icpScorer)
     // .addNode("generateEmails", generateEmails)
     // .addNode("emailQualityDeterminer", emailQualityDeterminer)
 
-    .addEdge(START, "enrichSerp")
-    .addEdge("enrichSerp", END)
+    .addEdge(START, "verifyEmail")
+    .addEdge("verifyEmail", END)
     // .addEdge("enrichApollo", "enrichSerp")
     // .addEdge("enrichSerp", "verifyEmail")
 
