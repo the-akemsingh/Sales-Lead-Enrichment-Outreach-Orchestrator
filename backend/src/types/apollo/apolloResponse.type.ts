@@ -35,10 +35,7 @@ const Organization = z.object({
     secondary_industries: z.array(z.string()),
     snippets_loaded: z.boolean(),
     industry_tag_id: z.string(),
-    industry_tag_hash: z.record(
-        z.string(),
-        z.string()
-    ),
+    industry_tag_hash: z.record(z.string(), z.string()),
     retail_location_count: z.number(),
     raw_address: z.string(),
     street_address: z.string().nullable(),
@@ -65,10 +62,7 @@ const Organization = z.object({
     org_chart_removed: z.boolean().nullable(),
     org_chart_show_department_filter: z.boolean().nullable(),
     is_placeholder_organization: z.boolean().nullable(),
-    departmental_head_count: z.record(
-        z.string(),
-        z.number()
-    ),
+    departmental_head_count: z.record(z.string(), z.number()),
     organization_headcount_six_month_growth: z.number(),
     organization_headcount_twelve_month_growth: z.number(),
     organization_headcount_twenty_four_month_growth: z.number(),

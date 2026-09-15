@@ -1,11 +1,11 @@
-import type { parsedApolloResponseType } from "../types/enrichedCompanyData.type";
+import type { parsedApolloResponseType } from "../../../types/apollo/parsed-apollo-response.schema";
 
 export function parseApolloResponse(orgData: any): parsedApolloResponseType {
     return {
         name: orgData.name,
         industry: orgData.industry,
         employeeCount: orgData.estimated_num_employees,
-        sixMonthGrowth: orgData.organization_headcount_six_month_growth,
+        sixMonthGrowth: orgData.organization_headcount_six_month_growth * 100,
         location: `${orgData.city}, ${orgData.country}`,
         foundedYear: orgData.founded_year,
         techStack: orgData.technology_names,

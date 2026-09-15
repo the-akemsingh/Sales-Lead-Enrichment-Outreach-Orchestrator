@@ -1,5 +1,5 @@
-import { config } from "../config/env.config";
-import { SerpApiJobsResponse } from "../types/serpApi/serpApiJobResponse.type";
+import { config } from "../../../config/env.config";
+import { SerpApiJobsResponse } from "../../../types/serp-api/serp-api-job-response.schema";
 
 const SERP_API_URL = "https://serpapi.com/search.json";
 
@@ -15,12 +15,13 @@ export async function fetchSerpJobs(company: string) {
         const response = await fetch(`${SERP_API_URL}?${params}`);
 
         if (!response.ok) {
-            throw new Error(`SERP News API error: ${response.status}`);
+            throw new Error(`SERP Jobs API error: ${response.status}`);
         }
         const rawData = await response.json();
         const data = SerpApiJobsResponse.parse(rawData)
         return data;
-    } catch (e) {
-        console.log("Error on serpJon functoin", e)
+    } catch (error) {
+        console.log("Error on serpJob function", error)
+        throw error
     }
 }

@@ -7,6 +7,7 @@ interface Config {
     apolloApiKey: string
     serpApiKey: string
     abstractApiKey: string
+    geminiApiKey: string
 }
 
 class ConfigLoader {
@@ -20,6 +21,7 @@ class ConfigLoader {
             apolloApiKey: String(process.env.APOLLO_API_KEY),
             serpApiKey: String(process.env.SERP_API_KEY),
             abstractApiKey: String(process.env.ABSTRACT_API_KEY),
+            geminiApiKey: String(process.env.GEMINI_API_KEY),
         };
     }
 
@@ -38,17 +40,20 @@ class ConfigLoader {
         if (!this.config.apiServerPort) {
             throw new Error('API_SERVER_PORT is required');
         }
-        if (!this.config.dbUrl) {
+        else if (!this.config.dbUrl) {
             throw new Error('DATABASE_URL is required');
         }
-        if (!this.config.apolloApiKey) {
+        else if (!this.config.apolloApiKey) {
             throw new Error('APOLLO_API_KEY is required');
         }
-        if (!this.config.serpApiKey) {
+        else if (!this.config.serpApiKey) {
             throw new Error('SERP_API_KEY is required');
         }
-        if (!this.config.abstractApiKey) {
+        else if (!this.config.abstractApiKey) {
             throw new Error('ABSTRACT_API_KEY is required');
+        }
+        else if (!this.config.geminiApiKey) {
+            throw new Error('GEMINI_API_KEY is required');
         }
     }
 }

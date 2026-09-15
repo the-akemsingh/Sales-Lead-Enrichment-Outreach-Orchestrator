@@ -1,6 +1,5 @@
-import { config } from "../config/env.config";
-import { SerpApiNewsResponse } from "../types/serpApi/serpApiNewsResponse.type";
-
+import { config } from "../../../config/env.config";
+import { SerpApiNewsResponse } from "../../../types/serp-api/serp-api-news-response.schema";
 
 const SERP_API_URL = "https://serpapi.com/search.json";
 
@@ -12,7 +11,6 @@ export async function fetchSerpNews(company: string) {
             q: company,
             tbm: "nws",
             api_key: config.get("serpApiKey")
-
         })
         const response = await fetch(`${SERP_API_URL}?${params}`);
 
@@ -22,7 +20,8 @@ export async function fetchSerpNews(company: string) {
         const rawdata = await response.json();
         const data = SerpApiNewsResponse.parse(rawdata);
         return data;
-    } catch (e) {
-        console.log("Error in news api - ", e)
+    } catch (error) {
+        console.log("Error in news api - ", error)
+        throw error
     }
 }
