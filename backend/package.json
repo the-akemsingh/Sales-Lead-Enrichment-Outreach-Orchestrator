@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun src/index.ts",
+    "dev": "node init && bun src/index.ts",
     "postinstall": "prisma skills sync || exit 0"
   },
   "devDependencies": {
