@@ -3,5 +3,6 @@
     "prisma-smart-formatter.typescriptreact.defaultFormatter": "vscode.typescript-language-features",
     "[prisma]": {
         "editor.defaultFormatter": "Prisma.prisma"
-    }
+    },
+    "prisma-smart-formatter.prisma.defaultFormatter": "Prisma.prisma"
 }
